@@ -25,9 +25,12 @@
         <label>Precio por noche ($)</label>
         <input type="number" step="0.01" name="precio_noche" class="form-control" value="{{ old('precio_noche', $habitacion->precio_noche ?? 0) }}" min="0" required>
     </div>
-    <div class="mb-3 form-check">
-        <input type="checkbox" name="disponible" class="form-check-input" {{ (old('disponible', $habitacion->disponible ?? true)) ? 'checked' : '' }}>
-        <label class="form-check-label">Disponible</label>
+    <div class="mb-3">
+        <label>Disponible</label>
+        <select name="disponible" id="disponible" class="form-select">
+            <option value=1>Si</option>
+            <option value=0>No</option>
+        </select>
     </div>
 
     <button type="submit" class="btn btn-primary">{{ isset($habitacion) ? 'Actualizar' : 'Crear' }}</button>

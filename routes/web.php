@@ -18,8 +18,8 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/habitaciones', [HabitacionController::class, 'index'])->name('habitaciones.index');
     Route::get('/admin/habitaciones/create', [HabitacionController::class, 'create'])->name('habitaciones.create');
-    Route::post('/admin/habitaciones', [HabitacionController::class, 'store']);
+    Route::post('/admin/habitaciones', [HabitacionController::class, 'store'])->name('habitaciones.store');
     Route::get('/admin/habitaciones/{id}/edit', [HabitacionController::class, 'edit'])->name('habitaciones.edit');
-    Route::put('/admin/habitaciones/{id}', [HabitacionController::class, 'update']);
-    Route::delete('/admin/habitaciones/{id}', [HabitacionController::class, 'destroy']);
+    Route::put('/admin/habitaciones/{id}', [HabitacionController::class, 'update'])->name('habitaciones.update');
+    Route::delete('/admin/habitaciones/{id}', [HabitacionController::class, 'destroy'])->name('habitaciones.destroy');
 });
