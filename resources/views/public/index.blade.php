@@ -132,10 +132,16 @@
 </nav>
 
 <!-- Hero Banner -->
-<section id="inicio" class="hero-section">
+<section id="inicio" class="hero-section"
+    @if($portada && $portada->foto)
+        style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{{ asset('storage/portada/' . $portada->foto) }}') no-repeat center center/cover;"
+    @else
+        style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://placehold.co/1920x600/4a6fa5/white?text=Hotel+ICI+-+Lujo+y+Confort') no-repeat center center/cover;"
+    @endif
+>
   <div class="container">
-    <h1 class="display-4 fw-bold">Bienvenido al Hotel ICI</h1>
-    <p class="lead">Lujo, confort y atención personalizada en el corazón de la ciudad.</p>
+    <h1 class="display-4 fw-bold">{{ $portada->titulo ?? 'Bienvenido al Hotel ICI' }}</h1>
+    <p class="lead">{{ $portada->descripcion ?? 'Lujo, confort y atención personalizada en el corazón de la ciudad.' }}</p>
     <button id="openChat" class="btn btn-success btn-lg mt-3">
       <i class="fas fa-robot"></i> Habla con nuestro asistente
     </button>
@@ -147,36 +153,26 @@
   <div class="container">
     <h2 class="section-title text-center">Nuestras Habitaciones</h2>
     <div class="row">
-      <div class="col-md-4 mb-4">
-        <div class="card room-card h-100">
-          <img src="https://placehold.co/600x400/e0e0e0/4a6fa5?text=Habitación+Doble" class="card-img-top" alt="Doble">
-          <div class="card-body">
-            <h5 class="card-title">Doble Matrimonial</h5>
-            <p class="card-text">Ideal para parejas. Incluye desayuno, Wi-Fi y estacionamiento.</p>
-            <p class="text-primary fw-bold">Desde $80/noche</p>
+      @forelse($habitaciones as $habitacion)
+        <div class="col-md-4 mb-4">
+          <div class="card room-card h-100">
+            @if($habitacion->foto)
+              <img src="{{ asset('storage/habitaciones/' . $habitacion->foto) }}" class="card-img-top" alt="{{ $habitacion->tipo }}">
+            @else
+              <img src="https://placehold.co/600x400/e0e0e0/4a6fa5?text=Sin+Imagen" class="card-img-top" alt="{{ $habitacion->tipo }}">
+            @endif
+            <div class="card-body">
+              <h5 class="card-title">{{ $habitacion->tipo }}</h5>
+              <p class="card-text">{{ $habitacion->descripcion }}</p>
+              <p class="text-primary fw-bold">Desde ${{ number_format($habitacion->precio_noche, 0, ',', '.') }}/noche</p>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col-md-4 mb-4">
-        <div class="card room-card h-100">
-          <img src="https://placehold.co/600x400/e0e0e0/4a6fa5?text=Suite+Presidencial" class="card-img-top" alt="Suite">
-          <div class="card-body">
-            <h5 class="card-title">Suite Presidencial</h5>
-            <p class="card-text">Lujo extremo con jacuzzi, vista panorámica y servicio 24h.</p>
-            <p class="text-primary fw-bold">Desde $150/noche</p>
-          </div>
+      @empty
+        <div class="col-12 text-center">
+          <p>No hay habitaciones disponibles en este momento.</p>
         </div>
-      </div>
-      <div class="col-md-4 mb-4">
-        <div class="card room-card h-100">
-          <img src="https://placehold.co/600x400/e0e0e0/4a6fa5?text=Familiar" class="card-img-top" alt="Familiar">
-          <div class="card-body">
-            <h5 class="card-title">Familiar</h5>
-            <p class="card-text">Espaciosa para hasta 4 personas. Perfecta para familias.</p>
-            <p class="text-primary fw-bold">Desde $120/noche</p>
-          </div>
-        </div>
-      </div>
+      @endforelse
     </div>
   </div>
 </section>
@@ -236,6 +232,7 @@
   <div class="container text-center">
     <p>&copy; 2025 Hotel ICI. Todos los derechos reservados.</p>
     <p>Diseñado para el Trabajo Final de Curso - ICI</p>
+    <a href="http://localhost:8000/login">Login</a>
   </div>
 </footer>
 
@@ -255,6 +252,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
   const openChat = document.getElementById('openChat');
   const openChat2 = document.getElementById('openChat2');
@@ -280,34 +279,51 @@
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
-  function getBotResponse(userMsg) {
-    const msg = userMsg.toLowerCase();
-    if (msg.includes('doble') || msg.includes('matrimonial')) {
-      return "¡Buenas tardes! Tenemos habitaciones dobles matrimoniales disponibles desde $80/noche, incluyen desayuno buffet, Wi-Fi y estacionamiento.";
-    } else if (msg.includes('suite')) {
-      return "Contamos con suites de lujo desde $150/noche, con jacuzzi, vista panorámica y servicio de habitaciones 24h.";
-    } else if (msg.includes('familiar')) {
-      return "Nuestras habitaciones familiares alojan hasta 4 personas y cuestan desde $120/noche.";
-    } else if (msg.includes('precio') || msg.includes('cuánto')) {
-      return "Nuestros precios van desde $80 (doble) hasta $150 (suite). ¿Le gustaría reservar?";
-    } else if (msg.includes('hola') || msg.includes('buenos') || msg.includes('buenas')) {
-      return "¡Hola! ¿En qué puedo ayudarle hoy?";
-    } else if (msg.includes('servicio') || msg.includes('incluye')) {
-      return "Incluimos desayuno buffet, Wi-Fi gratuito, estacionamiento y recepción 24 horas.";
-    } else {
-      return "Lo siento, solo puedo ayudarle con información sobre habitaciones, precios y servicios. ¿Tal vez preguntar por 'habitaciones dobles' o 'suite'?";
-    }
-  }
-
-  function sendMessage() {
+  // ✅ NUEVA FUNCIÓN: Envía la pregunta a tu servidor de Python
+  async function sendMessage() {
     const msg = userInput.value.trim();
     if (!msg) return;
+    
+    // Mostrar mensaje del usuario
     addMessage(msg, 'user');
     userInput.value = '';
-    setTimeout(() => {
-      const response = getBotResponse(msg);
-      addMessage(response, 'bot');
-    }, 500);
+    
+    // Mostrar "escribiendo..." (opcional)
+    const thinking = document.createElement('div');
+    thinking.classList.add('message', 'bot');
+    thinking.textContent = '...';
+    thinking.id = 'thinking';
+    chatMessages.appendChild(thinking);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    try {
+      // ✅ Llamada a tu servidor de Python (debe estar corriendo en localhost:8001)
+      const response = await fetch('http://localhost:8001/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: msg })
+      });
+
+      // Eliminar "escribiendo..."
+      const thinkingEl = document.getElementById('thinking');
+      if (thinkingEl) thinkingEl.remove();
+
+      if (response.ok) {
+        const data = await response.json();
+        addMessage(data.reply, 'bot');
+      } else {
+        addMessage('Lo siento, el asistente no está disponible en este momento.', 'bot');
+      }
+    } catch (error) {
+      // Eliminar "escribiendo..."
+      const thinkingEl = document.getElementById('thinking');
+      if (thinkingEl) thinkingEl.remove();
+      
+      addMessage('Error de conexión. ¿Está el asistente ejecutándose?', 'bot');
+      console.error('Error:', error);
+    }
   }
 
   sendBtn.addEventListener('click', sendMessage);

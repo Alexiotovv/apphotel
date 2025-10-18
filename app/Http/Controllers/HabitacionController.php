@@ -5,11 +5,9 @@ namespace App\Http\Controllers;
 
 // Importa el modelo Habitacion para poder usarlo en este controlador
 use App\Models\Habitacion;
-
-// Importa la clase Request para manejar los datos que vienen de formularios o peticiones HTTP
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
-// Define una clase llamada HabitacionController que controla las acciones relacionadas con las habitaciones
 class HabitacionController extends Controller
 {
     // Muestra la lista de habitaciones registradas
@@ -29,24 +27,68 @@ class HabitacionController extends Controller
         return view('habitaciones.create');
     }
 
-    // Guarda una nueva habitación en la base de datos
     public function store(Request $request)
     {
-        // Valida que los campos del formulario tengan datos correctos antes de guardar
         $request->validate([
-            'tipo' => 'required|string|max:100',        // El tipo es obligatorio, texto y máximo 100 caracteres
-            'descripcion' => 'required|string',         // La descripción es obligatoria y debe ser texto
-            'capacidad' => 'required|integer|min:1',    // La capacidad debe ser número entero mayor o igual a 1
-            'precio_noche' => 'required|numeric|min:0', // El precio debe ser número mayor o igual a 0
+            'tipo' => 'required|string|max:100',
+            'descripcion' => 'required|string',
+            'capacidad' => 'required|integer|min:1',
+            'precio_noche' => 'required|numeric|min:0',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
-        // Crea una nueva habitación con los datos validados del formulario
-        Habitacion::create($request->all());
-        
-        // Redirige al listado de habitaciones con un mensaje de éxito
+        $data = $request->only(['tipo', 'descripcion', 'capacidad', 'precio_noche']);
+
+        if ($request->hasFile('foto')) {
+            // Guarda el archivo en la carpeta 'habitaciones' del disco 'public'
+            $path = $request->file('foto')->store('habitaciones', 'public');
+            
+            // Extrae solo el nombre del archivo (última parte de la ruta)
+            $filename = basename($path);
+            
+            $data['foto'] = $filename;
+        }
+
+        Habitacion::create($data);
+
         return redirect()->route('habitaciones.index')->with('success', 'Habitación creada exitosamente.');
     }
+    // Actualiza los datos de una habitación existente
+    public function update(Request $request, Habitacion $habitacion)
+    {
+        $request->validate([
+            'tipo' => 'required|string|max:100',
+            'descripcion' => 'required|string',
+            'capacidad' => 'required|integer|min:1',
+            'precio_noche' => 'required|numeric|min:0',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+        ]);
 
+        $data = $request->only(['tipo', 'descripcion', 'capacidad', 'precio_noche']);
+
+        if ($request->hasFile('foto')) {
+            // 1. Eliminar la foto anterior si existe
+            if ($habitacion->foto) {
+                $oldPath = 'habitaciones/' . $habitacion->foto;
+                if (Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
+                }
+            }
+
+            // 2. Guardar la nueva foto y solo almacenar el nombre
+            $path = $request->file('foto')->store('habitaciones', 'public');
+            $data['foto'] = basename($path);
+        }
+
+        $habitacion->update($data);
+
+        return redirect()->route('habitaciones.index')->with('success', 'Habitación actualizada exitosamente.');
+    }
+
+
+
+
+    
     // Muestra el formulario para editar una habitación existente
     public function edit($id)
     {
@@ -57,26 +99,7 @@ class HabitacionController extends Controller
         return view('habitaciones.edit', compact('habitacion'));
     }
 
-    // Actualiza los datos de una habitación existente
-    public function update(Request $request, $id)
-    {
-        // Valida los campos del formulario igual que en la creación
-        $request->validate([
-            'tipo' => 'required|string|max:100',
-            'descripcion' => 'required|string',
-            'capacidad' => 'required|integer|min:1',
-            'precio_noche' => 'required|numeric|min:0',
-        ]);
-
-        // Busca la habitación a modificar
-        $habitacion = Habitacion::findOrFail($id);
-        
-        // Actualiza sus datos con la información del formulario
-        $habitacion->update($request->all());
-        
-        // Redirige al listado con un mensaje de confirmación
-        return redirect()->route('habitaciones.index')->with('success', 'Habitación actualizada.');
-    }
+    
 
     // Elimina una habitación de la base de datos
     public function destroy($id)

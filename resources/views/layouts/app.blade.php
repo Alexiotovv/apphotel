@@ -89,7 +89,6 @@
                 ⚙️ Opciones de Hotel <span>▾</span>
                 </a>
                 <div class="collapse ps-3" id="menu1">
-
                     <a href="#" class="nav-link">🗸 Opcion Menu1</a>
                     <a href="#" class="nav-link">🗸 Opcion Menu1</a>
                 </div>
@@ -100,8 +99,10 @@
                 ⚙️ Configurar <span>▾</span>
                 </a>
                 <!-- En el sidebar -->
-                <div class="collapse ps-3" id="menu1">
+                <div class="collapse ps-3" id="menu2">
                     <a href="{{ route('habitaciones.index') }}" class="nav-link">🗸 Gestionar Habitaciones</a>
+                    <a href="{{ route('servicios.index') }}" class="nav-link">🗸 Gestiionar Servicios</a>
+                    <a href="{{ route('portada.edit') }}" class="nav-link">Editar Portada</a>
                 </div>
 
             @endif

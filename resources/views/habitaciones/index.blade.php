@@ -14,6 +14,7 @@
                 <th>Capacidad</th>
                 <th>Precio</th>
                 <th>Disponible</th>
+                <th>Foto</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -24,6 +25,13 @@
                 <td>{{ $h->capacidad }} personas</td>
                 <td>${{ number_format($h->precio_noche, 2) }}</td>
                 <td>{!! $h->disponible ? '<span class="text-success">✅</span>' : '<span class="text-danger">❌</span>' !!}</td>
+                <td> 
+                    @if($h->foto)
+                        <img src="{{ asset('storage/habitaciones/' . $h->foto) }}" alt="Foto" width="80" height="60" class="rounded">
+                    @else
+                        <span class="text-muted">Sin foto</span>
+                    @endif
+                </td>
                 <td>
                     <a href="{{ route('habitaciones.edit', $h->id) }}" class="btn btn-sm btn-warning">✏️</a>
                     <form action="{{ route('habitaciones.destroy', $h->id) }}" method="POST" style="display:inline;">
