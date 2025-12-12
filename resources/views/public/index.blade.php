@@ -108,11 +108,10 @@
 </head>
 <body>
 
-<!-- Botón de acceso admin (flotante) -->
-<a href="{{ route('login') }}" class="btn btn-outline-dark btn-sm btn-admin">
-  <i class="fas fa-lock"></i> Acceso Admin
-</a>
 
+
+
+<!-- Navbar -->
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
   <div class="container">
@@ -126,6 +125,85 @@
         <li class="nav-item"><a class="nav-link" href="#habitaciones">Habitaciones</a></li>
         <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
         <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+        
+        @auth
+          <!-- Usuario autenticado -->
+          @if(auth()->user()->is_admin)
+            <li class="nav-item">
+              <a href="{{ route('admin.reservas.index') }}" class="nav-link">
+                <i class="fas fa-user-shield"></i> Panel Admin
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('logout') }}" 
+                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                 class="nav-link">
+                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+              </a>
+            </li>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+              @csrf
+            </form>
+          @else
+            <!-- Cliente -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="fas fa-user"></i> {{ Auth::user()->name }}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item" href="{{ route('cliente.reservas.index') }}">
+                    <i class="fas fa-calendar-alt me-2"></i> Mis Reservas
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="{{ route('cliente.reservas.index') }}#profile">
+                    <i class="fas fa-user-circle me-2"></i> Mi Perfil
+                  </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <a class="dropdown-item" href="{{ route('logout') }}" 
+                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+              @csrf
+            </form>
+          @endif
+        @else
+          <!-- Usuario no autenticado -->
+          <li class="nav-item">
+            <a href="{{ route('login') }}" class="nav-link">
+              <i class="fas fa-sign-in-alt"></i> Clientes
+            </a>
+          </li>
+          <li class="nav-item ms-2">
+            <a href="{{ route('login') }}" class="nav-link">
+              <i class="fas fa-lock"></i> Acceso Admin
+            </a>
+          </li>
+        @endauth
+        
+        <!-- En el navbar del index público -->
+        @auth
+            <!-- Usuario autenticado - mostrar botón "Reservar" -->
+            <li class="nav-item ms-2">
+                <a class="nav-link btn btn-primary" href="{{ route('reservas.create') }}">
+                    <i class="fas fa-calendar-plus"></i> Reservar
+                </a>
+            </li>
+        @else
+            <!-- Usuario no autenticado - mostrar botón "Iniciar sesión para reservar" -->
+            <li class="nav-item ms-2">
+                <a class="nav-link btn btn-primary" href="{{ route('login') }}">
+                    <i class="fas fa-sign-in-alt"></i> Reservar
+                </a>
+            </li>
+        @endauth
       </ul>
     </div>
   </div>
@@ -251,8 +329,11 @@
   </div>
 </div>
 
+<!-- En tu layout principal (app.blade.php o similar) -->
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 
 <script>
   const openChat = document.getElementById('openChat');
@@ -279,23 +360,37 @@
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
-  // ✅ NUEVA FUNCIÓN: Envía la pregunta a tu servidor de Python
+  // En tu archivo principal, modifica la función sendMessage():
   async function sendMessage() {
-    const msg = userInput.value.trim();
-    if (!msg) return;
-    
-    // Mostrar mensaje del usuario
-    addMessage(msg, 'user');
-    userInput.value = '';
-    
-    // Mostrar "escribiendo..." (opcional)
-    const thinking = document.createElement('div');
-    thinking.classList.add('message', 'bot');
-    thinking.textContent = '...';
-    thinking.id = 'thinking';
-    chatMessages.appendChild(thinking);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-
+      const msg = userInput.value.trim();
+      if (!msg) return;
+      
+      addMessage(msg, 'user');
+      userInput.value = '';
+      
+      // Respuestas automatizadas del chatbot
+      const lowerMsg = msg.toLowerCase();
+      
+      if (lowerMsg.includes('reservar') || lowerMsg.includes('reserva') || lowerMsg.includes('quiero reservar')) {
+          addMessage('¡Excelente! Te voy a dirigir a nuestro formulario de reservas. También puedes hacer clic en el botón "Reservar Ahora" en nuestra página.', 'bot');
+          
+          // Agregar botón de reserva en el chat
+          setTimeout(() => {
+              const div = document.createElement('div');
+              div.classList.add('message', 'bot');
+              div.innerHTML = `
+                  <a href="{{ route('reservas.create') }}" class="btn btn-success btn-sm">
+                      <i class="fas fa-calendar-plus"></i> Ir al Formulario de Reserva
+                  </a>
+                  <p class="mt-2">O también puedes hacer clic en "Reservar" en el menú principal.</p>
+              `;
+              chatMessages.appendChild(div);
+              chatMessages.scrollTop = chatMessages.scrollHeight;
+          }, 500);
+          return;
+      }
+      
+      // Resto de tu lógica para llamar al servidor Python...
     try {
       // ✅ Llamada a tu servidor de Python (debe estar corriendo en localhost:8001)
       const response = await fetch('http://localhost:8001/chat', {

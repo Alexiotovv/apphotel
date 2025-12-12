@@ -3,7 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Http\Middleware\AdminMiddleware; // 👈 Importa tu middleware
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\ClienteMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,10 +13,17 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Registra tu middleware con un alias
+        // Registra los middlewares con alias
         $middleware->alias([
-            'admin' => AdminMiddleware::class,
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'cliente' => \App\Http\Middleware\ClienteMiddleware::class,
+            'cliente.completo' => \App\Http\Middleware\ClienteCompletoMiddleware::class,
         ]);
+        
+        // También puedes agregar middlewares globales si necesitas
+        // $middleware->append([
+        //     \App\Http\Middleware\CustomMiddleware::class,
+        // ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

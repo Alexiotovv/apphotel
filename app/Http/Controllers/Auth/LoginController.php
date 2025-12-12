@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use App\Models\Cliente;
 
 class LoginController extends Controller
 {
@@ -41,16 +42,40 @@ class LoginController extends Controller
             // Regenerar la sesión para prevenir fijación de sesión
             $request->session()->regenerate();
 
+            $user = Auth::user();
+
             // Redirigir según el rol
-            if (Auth::user()->is_admin) {
-                return redirect()->intended('/admin/habitaciones');
+            if ($user->is_admin) {
+                return redirect()->intended('/admin/habitaciones')
+                    ->with('success', '¡Bienvenido Administrador!');
             }
 
-            // Si en el futuro hay área de cliente, redirigir aquí
-            return redirect()->intended('/');
+            // Si es cliente, verificar/crear registro en tabla clientes
+            if (!$user->cliente_id) {
+                $cliente = Cliente::where('email', $user->email)->first();
+                
+                if (!$cliente) {
+                    // Crear cliente automáticamente
+                    $cliente = Cliente::create([
+                        'nombre' => $user->name,
+                        'email' => $user->email,
+                        'dni' => 'PENDIENTE-' . time(),
+                        'telefono' => 'Sin especificar',
+                        'direccion' => 'Sin especificar',
+                    ]);
+                }
+                
+                // Asociar cliente al usuario
+                $user->cliente_id = $cliente->id;
+                $user->save();
+            }
+
+            // Redirigir al área de cliente
+            return redirect()->intended('/cliente/reservas')
+                ->with('success', '¡Bienvenido ' . $user->name . '!');
         }
 
-        // Si falla, lanzar error de validación (mensaje genérico por seguridad)
+        // Si falla, lanzar error de validación
         throw ValidationException::withMessages([
             'email' => ['Las credenciales no coinciden con nuestros registros.'],
         ]);
@@ -69,6 +94,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/')->with('info', 'Sesión cerrada exitosamente.');
     }
 }

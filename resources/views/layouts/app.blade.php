@@ -103,6 +103,8 @@
                     <a href="{{ route('habitaciones.index') }}" class="nav-link">🗸 Gestionar Habitaciones</a>
                     <a href="{{ route('servicios.index') }}" class="nav-link">🗸 Gestiionar Servicios</a>
                     <a href="{{ route('portada.edit') }}" class="nav-link">Editar Portada</a>
+                    <a href="{{ route('admin.reservas.index') }}" class="nav-link">📋 Gestionar Reservas</a>
+                    <a href="{{ route('admin.reservas.dashboard') }}" class="nav-link">📊 Dashboard Reservas</a>
                 </div>
 
             @endif
@@ -139,6 +141,10 @@
 
       {{-- @include('partials.breadcrumbs', ['breadcrumbs' => $breadcrumbs]) --}}
 
+
+      
+
+
       @yield('content')
     </div>
   </div>
@@ -147,7 +153,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>    
   @yield('scripts')
-
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     const toggleSidebar = document.getElementById('toggleSidebar');
     const sidebar = document.getElementById('sidebarMenu');
