@@ -174,7 +174,7 @@ class ReservaController extends Controller
             ]);
 
             // Enviar a Telegram
-            // $this->enviarATelegram($cliente, $reserva, $habitacion);
+            
             
             return redirect()->route('reservas.gracias', ['id' => $reserva->id])
                 ->with('success', '¡Reserva enviada exitosamente! Ya puedes verla y pagarla en "Mis Reservas".');
@@ -191,43 +191,7 @@ class ReservaController extends Controller
     }
 
 
-    // private function enviarATelegram($cliente, $reserva, $habitacion)
-    // {
-    //     // Configura tu bot de Telegram
-    //     $botToken = '7176635834:AAE4_aIsLrY_arta5vj3PbjHR6ghSpxHt1k'; // Reemplazar con tu token
-    //     $chatId = '6543016341'; // Reemplazar con tu chat ID (del dueño)
-        
-    //     $mensaje = "📅 *NUEVA RESERVA RECIBIDA* 📅\n";
-    //     $mensaje .= "━━━━━━━━━━━━━━━━━━━━\n";
-    //     $mensaje .= "👤 *Cliente:* {$cliente->nombre} {$cliente->apellido}\n";
-    //     $mensaje .= "📧 *Email:* {$cliente->email}\n";
-    //     $mensaje .= "📞 *Teléfono:* {$cliente->telefono}\n";
-    //     $mensaje .= "🆔 *DNI:* {$cliente->dni}\n";
-    //     $mensaje .= "━━━━━━━━━━━━━━━━━━━━\n";
-    //     $mensaje .= "🏨 *Habitación:* {$habitacion->tipo}\n";
-    //     $mensaje .= "📅 *Entrada:* " . $reserva->fecha_entrada . "\n";
-    //     $mensaje .= "📅 *Salida:* " . $reserva->fecha_salida . "\n";
-    //     $mensaje .= "🌙 *Noches:* {$reserva->noches}\n";
-    //     $mensaje .= "💰 *Total:* $" . number_format($reserva->precio_total, 2) . "\n";
-    //     $mensaje .= "━━━━━━━━━━━━━━━━━━━━\n";
-    //     $mensaje .= "🆔 *ID Reserva:* {$reserva->id}\n";
-        
-    //     if ($reserva->notas) {
-    //         $mensaje .= "📝 *Notas:* {$reserva->notas}\n";
-    //     }
-        
-    //     $mensaje .= "\n📋 *Ver detalles:* " . url('/admin/reservas/' . $reserva->id);
 
-    //     try {
-    //         Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
-    //             'chat_id' => $chatId,
-    //             'text' => $mensaje,
-    //             'parse_mode' => 'Markdown'
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         \Log::error('Error enviando a Telegram: ' . $e->getMessage());
-    //     }
-    // }
 
     public function gracias($id)
     {
