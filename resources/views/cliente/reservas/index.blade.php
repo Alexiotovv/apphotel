@@ -81,81 +81,81 @@
                             <th>Fechas</th>
                             <th>Total</th>
                             <th>Estado</th>
-                            <th>Pago</th>
+                            {{-- <th>Pago</th> --}}
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($reservas as $reserva)
-                        <tr>
-                            <td>
-                                <strong>#{{ str_pad($reserva->id, 6, '0', STR_PAD_LEFT) }}</strong><br>
-                                <small class="text-muted">{{ $reserva->created_at->format('d/m/Y') }}</small>
-                            </td>
-                            <td>
-                                {{ $reserva->habitacion->tipo }}<br>
-                                <small>{{ $reserva->noches }} noche{{ $reserva->noches > 1 ? 's' : '' }}</small>
-                            </td>
-                            <td>
-                                <small>Entrada: {{ $reserva->fecha_entrada->format('d/m/Y') }}</small><br>
-                                <small>Salida: {{ $reserva->fecha_salida->format('d/m/Y') }}</small>
-                            </td>
-                            <td>
-                                <strong>${{ number_format($reserva->precio_total, 2) }}</strong>
-                            </td>
-                            <td>
-                                @if($reserva->estado == 'pendiente')
-                                    <span class="badge-estado badge-pendiente">⏳ Pendiente</span>
-                                @elseif($reserva->estado == 'confirmada')
-                                    <span class="badge-estado badge-confirmada">✅ Confirmada</span>
-                                @else
-                                    <span class="badge-estado badge-cancelada">❌ Cancelada</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($reserva->venta)
-                                    @if($reserva->venta->estado == 'completada')
-                                        <span class="badge bg-success">💰 Pagado</span>
-                                    @elseif($reserva->venta->estado == 'pendiente')
-                                        <span class="badge bg-warning">💳 Pendiente</span>
-                                    @else
-                                        <span class="badge bg-danger">❌ Cancelado</span>
-                                    @endif
-                                @else
-                                    <span class="badge bg-secondary">❓ Sin venta</span>
-                                @endif
-                            </td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('cliente.reservas.show', $reserva->id) }}" 
-                                       class="btn btn-info" title="Ver detalles">
-                                        👁️
-                                    </a>
-                                    
+                            <tr>
+                                <td>
+                                    <strong>#{{ str_pad($reserva->id, 6, '0', STR_PAD_LEFT) }}</strong><br>
+                                    <small class="text-muted">{{ $reserva->created_at->format('d/m/Y') }}</small>
+                                </td>
+                                <td>
+                                    {{ $reserva->habitacion->tipo }}<br>
+                                    <small>{{ $reserva->noches }} noche{{ $reserva->noches > 1 ? 's' : '' }}</small>
+                                </td>
+                                <td>
+                                    <small>Entrada: {{ $reserva->fecha_entrada->format('d/m/Y') }}</small><br>
+                                    <small>Salida: {{ $reserva->fecha_salida->format('d/m/Y') }}</small>
+                                </td>
+                                <td>
+                                    <strong>${{ number_format($reserva->precio_total, 2) }}</strong>
+                                </td>
+                                <td>
                                     @if($reserva->estado == 'pendiente')
-                                        <a href="{{ route('cliente.reservas.pagar', $reserva->id) }}" 
-                                           class="btn btn-success" title="Pagar">
-                                            💳
-                                        </a>
-                                        <form action="{{ route('cliente.reservas.cancelar', $reserva->id) }}" 
-                                              method="POST" class="d-inline"
-                                              onsubmit="return confirm('¿Cancelar esta reserva?')">
-                                            @csrf
-                                            <button type="submit" class="btn btn-danger" title="Cancelar">
-                                                ❌
-                                            </button>
-                                        </form>
+                                        <span class="badge-estado badge-pendiente">⏳ Pendiente</span>
+                                    @elseif($reserva->estado == 'confirmada')
+                                        <span class="badge-estado badge-confirmada">✅ Confirmada</span>
+                                    @else
+                                        <span class="badge-estado badge-cancelada">❌ Cancelada</span>
                                     @endif
-                                    
-                                    @if($reserva->estado == 'confirmada' && $reserva->venta && $reserva->venta->estado == 'completada')
-                                        <a href="{{ route('cliente.reservas.comprobante', optional($reserva->venta->pagos->first())->id) }}" 
-                                           class="btn btn-secondary" title="Ver comprobante">
-                                            🧾
-                                        </a>
+                                </td>
+                                {{-- <td>
+                                    @if($reserva->venta)
+                                        @if($reserva->venta->estado == 'completada')
+                                            <span class="badge bg-success">💰 Pagado</span>
+                                        @elseif($reserva->venta->estado == 'pendiente')
+                                            <span class="badge bg-warning">💳 Pendiente</span>
+                                        @else
+                                            <span class="badge bg-danger">❌ Cancelado</span>
+                                        @endif
+                                    @else
+                                        <span class="badge bg-secondary">❓ Sin venta</span>
                                     @endif
-                                </div>
-                            </td>
-                        </tr>
+                                </td> --}}
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ route('cliente.reservas.show', $reserva->id) }}" 
+                                        class="btn btn-info" title="Ver detalles">
+                                            👁️
+                                        </a>
+                                        
+                                        @if($reserva->estado == 'pendiente')
+                                            <a href="{{ route('cliente.reservas.pagar', $reserva->id) }}" 
+                                            class="btn btn-success" title="Pagar">
+                                                💳
+                                            </a>
+                                            <form action="{{ route('cliente.reservas.cancelar', $reserva->id) }}" 
+                                                method="POST" class="d-inline"
+                                                onsubmit="return confirm('¿Cancelar esta reserva?')">
+                                                @csrf
+                                                <button type="submit" class="btn btn-danger" title="Cancelar">
+                                                    ❌
+                                                </button>
+                                            </form>
+                                        @endif
+                                        
+                                        @if($reserva->estado == 'confirmada' && $reserva->venta && $reserva->venta->estado == 'completada')
+                                            <a href="{{ route('cliente.reservas.comprobante', optional($reserva->venta->pagos->first())->id) }}" 
+                                            class="btn btn-secondary" title="Ver comprobante">
+                                                🧾
+                                            </a>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>
