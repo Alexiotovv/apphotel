@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ClienteMiddleware;
+use App\Http\Middleware\Localization; // Importa tu middleware
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -20,10 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'cliente.completo' => \App\Http\Middleware\ClienteCompletoMiddleware::class,
         ]);
         
-        // También puedes agregar middlewares globales si necesitas
-        // $middleware->append([
-        //     \App\Http\Middleware\CustomMiddleware::class,
-        // ]);
+        $middleware->web(append: [
+            \App\Http\Middleware\Localization::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

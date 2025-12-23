@@ -121,10 +121,10 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="#inicio">Inicio</a></li>
-        <li class="nav-item"><a class="nav-link" href="#habitaciones">Habitaciones</a></li>
+        <li class="nav-item"><a class="nav-link" href="#inicio">{{__('messages.nav.home')}}</a></li>
+        <li class="nav-item"><a class="nav-link" href="#habitaciones">{{__('messages.nav.rooms')}}</a></li>
         <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
-        <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contacto">{{ __('messages.nav.contact') }}</a></li>
         
         @auth
           <!-- Usuario autenticado -->
@@ -178,29 +178,48 @@
           <!-- Usuario no autenticado -->
           <li class="nav-item">
             <a href="{{ route('login') }}" class="nav-link">
-              <i class="fas fa-sign-in-alt"></i> Clientes
+              <i class="fas fa-sign-in-alt"></i> {{__('messages.nav.customers')}}
             </a>
           </li>
           <li class="nav-item ms-2">
             <a href="{{ route('login') }}" class="nav-link">
-              <i class="fas fa-lock"></i> Acceso Admin
+              <i class="fas fa-lock"></i> {{__('messages.nav.admin_access')}}
             </a>
           </li>
         @endauth
         
+
+      <!-- Selector de Idioma -->
+      <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              <i class="fas fa-globe"></i> {{ config('app.available_locales')[app()->getLocale()] ?? 'ES' }}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+              @foreach(config('app.available_locales') as $localeCode => $localeName)
+                  <li>
+                      <a class="dropdown-item {{ app()->getLocale() == $localeCode ? 'active' : '' }}"
+                        href="{{ route('language.switch', $localeCode) }}">
+                          {{ $localeName }}
+                      </a>
+                  </li>
+              @endforeach
+          </ul>
+      </li>
+
+
         <!-- En el navbar del index público -->
         @auth
             <!-- Usuario autenticado - mostrar botón "Reservar" -->
             <li class="nav-item ms-2">
                 <a class="nav-link btn btn-primary" href="{{ route('reservas.create') }}">
-                    <i class="fas fa-calendar-plus"></i> Reservar
+                    <i class="fas fa-calendar-plus"></i> {{__('messages.nav.book')}}
                 </a>
             </li>
         @else
             <!-- Usuario no autenticado - mostrar botón "Iniciar sesión para reservar" -->
             <li class="nav-item ms-2">
                 <a class="nav-link btn btn-primary" href="{{ route('login') }}">
-                    <i class="fas fa-sign-in-alt"></i> Reservar
+                    <i class="fas fa-sign-in-alt"></i> {{__('messages.nav.book')}}
                 </a>
             </li>
         @endauth
@@ -218,10 +237,11 @@
     @endif
 >
   <div class="container">
-    <h1 class="display-4 fw-bold">{{ $portada->titulo ?? 'Bienvenido al Hotel ICI' }}</h1>
-    <p class="lead">{{ $portada->descripcion ?? 'Lujo, confort y atención personalizada en el corazón de la ciudad.' }}</p>
+    {{-- <h1 class="display-4 fw-bold">{{ $portada->titulo ?? __('messages.hero.welcome') }}</h1> --}}
+    <h1 class="display-4 fw-bold">{{ __('messages.hero.welcome') }}</h1>
+    <p class="lead">{{ __('messages.hero.subtitle') }}</p>
     <button id="openChat" class="btn btn-success btn-lg mt-3">
-      <i class="fas fa-robot"></i> Habla con nuestro asistente
+      <i class="fas fa-robot"></i> {{ __('messages.hero.habla') }}
     </button>
   </div>
 </section>
@@ -229,7 +249,7 @@
 <!-- Habitaciones -->
 <section id="habitaciones" class="py-5 bg-light">
   <div class="container">
-    <h2 class="section-title text-center">Nuestras Habitaciones</h2>
+    <h2 class="section-title text-center">{{ __('messages.hero.rooms') }}</h2>
     <div class="row">
       @forelse($habitaciones as $habitacion)
         <div class="col-md-4 mb-4">
@@ -258,7 +278,7 @@
 <!-- Servicios -->
 <section id="servicios" class="py-5">
   <div class="container">
-    <h2 class="section-title text-center">Servicios Incluidos</h2>
+    <h2 class="section-title text-center">{{ __('messages.hero.services_includes') }}</h2>
     <div class="row text-center">
       <div class="col-md-3 mb-4">
         <div class="p-3">
@@ -291,14 +311,14 @@
 <!-- Contacto -->
 <section id="contacto" class="py-5 bg-light">
   <div class="container">
-    <h2 class="section-title text-center">Contáctanos</h2>
+    <h2 class="section-title text-center">{{__('messages.hero.contactus')}}</h2>
     <div class="row justify-content-center">
       <div class="col-md-8 text-center">
         <p><i class="fas fa-map-marker-alt"></i> Av. Siempre Viva 123, Ciudad</p>
         <p><i class="fas fa-phone"></i> +56 9 1234 5678</p>
         <p><i class="fas fa-envelope"></i> contacto@hotelici.com</p>
         <button id="openChat2" class="btn btn-outline-primary mt-3">
-          <i class="fas fa-comments"></i> Pregúntanos por el chat
+          <i class="fas fa-comments"></i> {{__('messages.hero.ask_by_chat')}}
         </button>
       </div>
     </div>

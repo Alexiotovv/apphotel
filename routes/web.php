@@ -97,3 +97,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reservar', [ReservaController::class, 'store'])->name('reservas.store');
     Route::get('/reservas/gracias/{id}', [ReservaController::class, 'gracias'])->name('reservas.gracias');
 });
+Route::get('language/{locale}', function ($locale) {
+    if (array_key_exists($locale, config('app.available_locales'))) {
+        App::setLocale($locale);
+        Session::put('locale', $locale);
+    }
+    return redirect()->back();
+})->name('language.switch');
